@@ -1,7 +1,12 @@
 import express from 'express';
 import multer from 'multer';
-import ProductManager from './controllers/c_products';
-import { createCart, getCart, addToCart } from './controllers/c_carts';
+import ProductManager from './controllers/c_products.js';
+import { createCart, getCart, addToCart } from './controllers/c_carts.js';
+
+
+//Rotas
+import cartRoutes from './routes/carts.js';
+import productRouter from './routes/products.js';
 
 const app = express();
 const port = 8080;
@@ -14,16 +19,11 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // Product routes
-app.get('/routes/products', ProductManager.getProducts);
-app.get('/routes/products/:pid', ProductManager.getProduct);
-app.post('/routes/products', upload.single('thumbnail'), ProductManager.addProduct);
-app.put('/routes/products/:pid', upload.single('thumbnail'), ProductManager.updateProduct);
-app.delete('/routes/products/:pid', ProductManager.deleteProduct);
+app.use('/routes/products', productRouter);
 
-// Cart routes
-app.post('/routes/carts', createCart);
-app.get('/routes/carts/:cid', getCart);
-app.post('/routes/carts/:cid/product/:pid', addToCart);
+// Use the cart routes
+app.use('/routes/carts', cartRoutes);
+
 
 app.listen(port, () => {
     console.log(`Server funcionando en el puerto ${port}`);

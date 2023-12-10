@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { getCart, createCart, addToCart } from '../controllers/c_carts';
+import { getCart, createCart, addToCart } from '../controllers/c_carts.js'; 
 
 const router = express.Router();
 const upload = multer();

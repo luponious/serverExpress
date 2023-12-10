@@ -1,116 +1,95 @@
-import { v4 as uuidv4 } from 'uuid';
-import fs from 'fs';
-import { StatusCodes } from 'http-status-codes'; //lib p/ errores
+import { StatusCodes } from 'http-status-codes';
+import Product from '../models/products.js';
+import Cart from '../models/cart.js';
 
-const dataFilePath = './productsData.json';
+// Cart Controllers
 
-const readProductsFromFile = () => {
+export const createCart = async (req, res) => {
   try {
-    const data = fs.readFileSync(dataFilePath, 'utf8');
-    return JSON.parse(data);
+    //verificacione y midleware va aca, por hora vamos con eso...
+    const userId = req.userId; // substituir por logica p/ pedir user ID
+
+    // init cart vacio
+    const newCart = new Cart({
+      userId: userId,
+      products: [],
+      totalPrice: 0,
+    });
+
+    // guarda cart en db
+    await newCart.save();
+
+    // Responde con cart creado
+    res.status(StatusCodes.CREATED).json({ message: 'Cart created successfully.', cart: newCart });
   } catch (error) {
-    return [];
+    // devuelve errores
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };
 
-const writeProductsToFile = (products) => {
-  fs.writeFileSync(dataFilePath, JSON.stringify(products, null, 2), 'utf8');
-};
-
-export const getProducts = (req, res) => {
+export const getCart = async (req, res) => {
   try {
-    const { limit } = req.query;
-    const products = readProductsFromFile();
+    // Extract user ID de la request
+    const userId = req.userId;
 
-    if (limit) {
-      res.status(StatusCodes.OK).json({ products: products.slice(0, parseInt(limit, 10)) });
-    } else {
-      res.status(StatusCodes.OK).json({ products });
-    }
+    // busca el cart del usuario basedo en user ID
+    const cart = await Cart.findOne({ userId });
+
+    // devuelve cart encontrado
+    res.status(StatusCodes.OK).json({ cart });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };
 
-export const getProduct = (req, res) => {
-  try {
-    const { pid } = req.params;
-    const products = readProductsFromFile();
-    const product = products.find((p) => p.id === pid);
+export const addToCart = async (req, res) => {
+  const { cid, pid } = req.params;
+  const { quantity } = req.body;
 
-    if (product) {
-      res.status(StatusCodes.OK).json({ product });
+  try {
+    // busca product
+    const product = await Product.findById(pid);
+
+    if (!product) {
+      return res.status(StatusCodes.NOT_FOUND).json({ error: 'Product not found.' });
+    }
+
+    // busca cart
+    let cart = await Cart.findById(cid);
+
+    // // si no existe, se muere, joda, crea uno nuevo
+    if (!cart) {
+      cart = new Cart({
+        userId: cid, // assumimos que cid es el mismo de user ID
+        products: [],
+        totalPrice: 0,
+      });
+    }
+
+    // check de producto en cart
+    const existingProduct = cart.products.find((item) => item.productId.equals(product._id));
+
+    if (existingProduct) {
+      // si ya esta, se actualiza la cantidad
+      existingProduct.quantity += quantity;
     } else {
-      res.status(StatusCodes.NOT_FOUND).json({ error: 'Producto no encontrado.' });
+      // sino lo agrega
+      cart.products.push({
+        productId: product._id,
+        quantity,
+      });
     }
+
+    // Update precio total
+    cart.totalPrice += product.price * quantity;
+
+    // guarda cart
+    await cart.save();
+
+    // Res con updated de cart
+    res.status(StatusCodes.OK).json({ cart });
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
-  }
-};
-
-export const addProduct = (req, res) => {
-  try {
-    const { title, description, code, price, stock, category, thumbnails } = req.body;
-
-    if (!title || !description || !code || !price || !stock || !category) {
-      throw new Error('Todos los campos son obligatorios excepto thumbnails.');
-    }
-
-    if (typeof price !== 'number' || typeof stock !== 'number' || price < 0 || stock < 0) {
-      throw new Error('Precio y stock deben ser números no negativos.');
-    }
-
-    const id = uuidv4();
-    const newProduct = { id, title, description, code, price, stock, category, thumbnails };
-
-    const products = readProductsFromFile();
-    products.push(newProduct);
-    writeProductsToFile(products);
-
-    res.status(StatusCodes.CREATED).json({ product: newProduct });
-  } catch (error) {
-    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
-  }
-};
-
-export const updateProduct = (req, res) => {
-  try {
-    const { pid } = req.params;
-    const updatedFields = req.body;
-
-    if (!Object.keys(updatedFields).length) {
-      throw new Error('Difina los campo(s) obligatorios para actualizar.');
-    }
-
-    const products = readProductsFromFile();
-    const productIndex = products.findIndex((p) => p.id === pid);
-
-    if (productIndex !== -1) {
-      products[productIndex] = { ...products[productIndex], ...updatedFields };
-      writeProductsToFile(products);
-
-      res.status(StatusCodes.OK).json({ product: products[productIndex] });
-    } else {
-      res.status(StatusCodes.NOT_FOUND).json({ error: 'Producto no encontrado.' });
-    }
-  } catch (error) {
-    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
-  }
-};
-
-export const deleteProduct = (req, res) => {
-  try {
-    const { pid } = req.params;
-    const products = readProductsFromFile();
-    const updatedProducts = products.filter((p) => p.id !== pid);
-
-    if (updatedProducts.length < products.length) {
-      writeProductsToFile(updatedProducts);
-      res.status(StatusCodes.OK).json({ message: 'Producto eliminado con éxito.' });
-    } else {
-      res.status(StatusCodes.NOT_FOUND).json({ error: 'Producto non existe en esta realidad.' });
-    }
-  } catch (error) {
-    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
+    console.error(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error.' });
   }
 };

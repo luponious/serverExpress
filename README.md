@@ -4,7 +4,7 @@
 
 ## Description
 
-Este proyecto implementa un servidor Node.js con Express para el manejo de productos y carritos. Utiliza [MULTER] como el sistema de archivos  para la persistencia de datos.
+description in progress...
 
 ## Table of Contents
 
@@ -14,7 +14,7 @@ Este proyecto implementa un servidor Node.js con Express para el manejo de produ
 
 - [Contact](#contact)
 
-## Installation
+### Installation
 
 
 
