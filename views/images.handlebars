@@ -1,0 +1,18 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload Image</title>
+  </head>
+  <body>
+    <h1>Upload Image</h1>
+    <div>
+      <form action="/images" method="post" enctype="multipart/form-data">
+        <input type="file" name="image" id="inputImage" />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+
+    <script src="upload.js"></script>
+  </body>
+</html>
