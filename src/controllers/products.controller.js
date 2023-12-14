@@ -1,7 +1,7 @@
 import productManager from "../services/ProductManager.js";
 import { validateLimit, validateProductId } from "../utils/validations.js";
 
-// working
+// Valida Limit 
 export async function getProducts(req, res) {
   try {
     const limit = parseInt(req.query.limit);
@@ -19,7 +19,7 @@ export async function getProducts(req, res) {
   }
 }
 
-// Working
+// Busca por id
 export async function getProductById(req, res) {
   try {
     if (!req.params.id)
@@ -41,7 +41,7 @@ export async function getProductById(req, res) {
   }
 }
 
-// Working
+// Agrega prod
 export async function addProduct(req, res) {
   try {
     const {
@@ -75,7 +75,7 @@ export async function addProduct(req, res) {
   }
 }
 
-// Working
+// Actualiza por id
 export async function updateProductById(req, res) {
   try {
     if (!req.params.id) {
@@ -111,7 +111,7 @@ export async function updateProductById(req, res) {
   }
 }
 
-// Working
+// Delete por id
 export async function deleteProductById(req, res) {
   try {
     if (!req.params.id) {
