@@ -13,6 +13,7 @@ En este proyecto, se utilizaron las siguientes herramientas:
 - **Sweetalert2**: Biblioteca para mostrar modales y alertas personalizadas.
 - **Axios**: Axios es una biblioteca de JavaScript que simplifica las solicitudes HTTP. En este proyecto, se utiliza para realizar peticiones al servidor desde el lado del cliente
 - **HTML, CSS y JavaScript**: Lenguajes utilizados para desarrollar la interfaz de usuario y manipular elementos en el lado del cliente.
+- **MONGO Atlas**: Permanencia de archivos vinculada a una db.
 
 ## Cómo Ejecutar el Proyecto
 

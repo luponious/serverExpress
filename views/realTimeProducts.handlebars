@@ -1,14 +1,17 @@
 <h1 id="productHeader">Lista de Productos</h1>
+
 <div class="product-grid" id="productList"></div>
-<form enctype="multipart/form-data">
+
+<div>
+<form enctype="multipart/form-data" class="product-form">
   <h2>Crear Producto</h2>
 
-  <fieldset>
+  <fieldset class="form-group">
     <label for="productTitle">Nombre:</label>
     <input required type="text" name="productTitle" id="productTitle" />
   </fieldset>
 
-  <fieldset>
+  <fieldset class="form-group">
     <label for="productDescription">Descripcion:</label>
     <input
       required
@@ -18,45 +21,48 @@
     />
   </fieldset>
 
-  <fieldset>
-    <label for="productPrice">Precio: </label>
+  <fieldset class="form-group">
+    <label for="productPrice">Precio:</label>
     <input required type="text" name="productPrice" id="productPrice" />
   </fieldset>
 
-  <fieldset>
+  <fieldset class="form-group">
     <label for="productCode">Codigo:</label>
     <input required type="text" name="productCode" id="productCode" />
   </fieldset>
 
-  <fieldset>
-    <label for="productStatus">Disponibilidad: </label>
+  <fieldset class="form-group">
+    <label for="productStatus">Disponibilidad:</label>
     <input type="checkbox" name="productStatus" id="productStatus" />
   </fieldset>
 
-  <fieldset>
+  <fieldset class="form-group">
     <label for="productStock">Stock:</label>
     <input type="text" name="productStock" id="productStock" />
   </fieldset>
 
-  <fieldset>
+  <fieldset class="form-group">
     <label for="productCategory">Categoria:</label>
     <input required type="text" name="productCategory" id="productCategory" />
   </fieldset>
 
-  <fieldset>
+  <fieldset class="form-group">
     <label for="productImage">Imagen:</label>
     <input type="file" name="productImage" id="productImage" accept="image/*" />
   </fieldset>
 
   <button type="submit">Enviar</button>
 </form>
+</div>
 
-<a href="http://localhost:8080/" target="_self">
-  <button>Inicio</button>
-</a>
-<a href="http://localhost:8080/chat" target="_self">
-  <button>Chat</button>
-</a>
+<div class="navigation-buttons">
+  <a href="http://localhost:8080/" target="_self">
+    <button>Inicio</button>
+  </a>
+  <a href="http://localhost:8080/chat" target="_self">
+    <button>Chat</button>
+  </a>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/socket.io/socket.io.js"></script>

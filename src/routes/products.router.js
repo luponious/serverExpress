@@ -3,18 +3,51 @@ import { productModel } from "../dao/models/product.model.js";
 
 export const productsRouter = Router();
 
-// GET
 productsRouter.get("/", async (req, res) => {
   try {
-    const products = await productModel.find().lean();
-    res.status(200).json(products);
+    let { limit = 5, page = 1, sort, query } = req.query;
+
+    limit = parseInt(limit);
+    page = parseInt(page);
+
+    const options = {
+      page,
+      limit,
+      lean: true,
+      sort:
+        sort === "desc" ? { price: -1 } : sort === "asc" ? { price: 1 } : null,
+    };
+
+    const filter = query ? { category: query } : {};
+
+    const products = await productModel.paginate(filter, options);
+
+    const response = {
+      status: "success",
+      hasDocuments: products.docs.length > 0,
+      payload: products.docs,
+      totalPages: products.totalPages,
+      prevPage: products.hasPrevPage ? page - 1 : null,
+      nextPage: products.hasNextPage ? page + 1 : null,
+      page,
+      hasPrevPage: products.hasPrevPage,
+      hasNextPage: products.hasNextPage,
+      prevLink: products.hasPrevPage
+        ? `/api/products?limit=${limit}&page=${page - 1}`
+        : null,
+      nextLink: products.hasNextPage
+        ? `/api/products?limit=${limit}&page=${page + 1}`
+        : null,
+    };
+
+    res.status(200).json(response);
   } catch (error) {
     console.log("Error al obtener los productos con mongoose: ", error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// GET BY ID
+
 productsRouter.get("/:id", async (req, res) => {
   try {
     if (!req.params.id) return res.status(400).json({ error: "Falta el ID" });
@@ -30,7 +63,6 @@ productsRouter.get("/:id", async (req, res) => {
   }
 });
 
-// POST
 productsRouter.post("/", async (req, res) => {
   const {
     title,
@@ -74,7 +106,6 @@ productsRouter.post("/", async (req, res) => {
   }
 });
 
-// PUT
 productsRouter.put("/:id", async (req, res) => {
   console.log("req.body: ", req.body);
   const {
@@ -125,7 +156,6 @@ productsRouter.put("/:id", async (req, res) => {
   }
 });
 
-// DELETE
 productsRouter.delete("/:id", async (req, res) => {
   try {
     if (!req.params.id) return res.status(400).json({ error: "Falta el ID" });

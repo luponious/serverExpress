@@ -7,6 +7,17 @@
   <button>Control de Productos</button>
 </a>
 
+{{#if hasDocuments}}
+  {{#each payload}}
+    <li>
+      <p>Producto: {{this.title}}</p>
+      <p>Costo: {{this.price}}</p>
+    </li>
+  {{/each}}
+{{else}}
+  <p>No hay productos por acá.</p>
+{{/if}}
+
 <a href="http://localhost:8080/chat" target="_self">
   <button>Chat 100% original</button>
 </a>
