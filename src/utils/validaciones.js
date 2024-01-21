@@ -7,13 +7,13 @@ export function validateLimit(limit) {
   if (limit <= 0 || limit > 200) {
     throw new Error("'limit' entre 1 y 200.");
   }
-}//limit de items
+}
 
 export function validateProductId(id) {
   if (Number.isNaN(id) || id <= 0) {
     throw new Error("El ID del producto debe ser un número entero positivo.");
   }
-}//id check
+}
 
 export function validateArrayOfStrings(arr, fieldName) {
   if (!Array.isArray(arr) || !arr.every((item) => typeof item === "string")) {
@@ -25,7 +25,7 @@ export function validateArrayOfStrings(arr, fieldName) {
     throw new Error(` '${fieldName}' indefinido.`);
   }
   return true;
-}//arr check
+}
 
 export function validateType(value, expectedType, fieldName) {
   const valueType = typeof value;
@@ -35,7 +35,7 @@ export function validateType(value, expectedType, fieldName) {
     );
   }
   return true;
-}//type check
+}
 
 export function validateUpdates(updates, allowedProperties) {
   return Object.keys(updates).reduce((acc, key) => {
@@ -51,4 +51,4 @@ export function validateUpdates(updates, allowedProperties) {
     }
     return acc;
   }, {});
-}//updater
+}
